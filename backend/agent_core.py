@@ -30,6 +30,7 @@ async def orchestrate_disaster_response(event_type: str, location: str):
     log(f"MCP Response received: Weather: {mcp_data['weather']}, Traffic: {mcp_data['traffic']}", "MCP Server")
     
     # 2. A2A Protocol: Delegate to Medical Agent
+    log("Dynamically loading skill: 'medical-assessment-calculator'...", "Orchestrator")
     log(f"Delegating medical assessment to Medical Agent...", "Orchestrator -> Medical Agent")
     await asyncio.sleep(1) # Simulate thinking
     medical_plan = {
@@ -40,6 +41,7 @@ async def orchestrate_disaster_response(event_type: str, location: str):
     log(f"Medical Assessment complete. Kits required: {medical_plan['kits_required']}", "Medical Agent")
     
     # 3. A2A Protocol: Delegate to Shelter Agent
+    log("Dynamically loading skill: 'evacuation-routing-planner'...", "Orchestrator")
     log(f"Delegating shelter and routing to Shelter Agent...", "Orchestrator -> Shelter Agent")
     await asyncio.sleep(1) # Simulate thinking
     shelter_plan = {
