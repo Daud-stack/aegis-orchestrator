@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { ShieldAlert, Activity, MapPin, CheckCircle, XCircle, Loader2, ArrowRight } from 'lucide-react';
-import { MapContainer, TileLayer, Marker, Circle, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Tooltip, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './App.css';
@@ -214,7 +214,15 @@ function App() {
                
                {incidentCoords && (
                  <>
-                   <Marker position={incidentCoords} icon={incidentIcon} />
+                   <CircleMarker 
+                     center={incidentCoords} 
+                     radius={8}
+                     pathOptions={{ color: '#ef4444', fillColor: '#ef4444', fillOpacity: 1, weight: 2 }}
+                   >
+                     <Tooltip permanent direction="top" offset={[0, -10]} className="map-tooltip">
+                       {LOCATION_COORDS[eventLocation]?.label || eventLocation} - {eventType}
+                     </Tooltip>
+                   </CircleMarker>
                    <Circle
                      center={incidentCoords}
                      radius={1500}

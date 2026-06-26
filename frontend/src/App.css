@@ -288,8 +288,21 @@ button {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--accent);
-  animation: pulse 2s infinite;
+  background: var(--warning);
+  box-shadow: 0 0 10px var(--warning);
+}
+
+.map-tooltip {
+  background: rgba(0, 0, 0, 0.8) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--danger) !important;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.4) !important;
+  font-family: inherit;
+  font-weight: 600;
+  border-radius: 4px;
+}
+.map-tooltip::before {
+  border-top-color: var(--danger) !important;
 }
 .map-status-overlay.alert .status-indicator {
   background: var(--danger);
