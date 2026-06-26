@@ -43,7 +43,7 @@ async def mcp_query(location: str):
     LOCATION_ROADS = {
         # ── United States ──
         "Sector 4": {
-            "roads": ["Wilshire Blvd", "Santa Monica Blvd", "I-405", "US-101 Freeway", "Sunset Blvd", "La Brea Ave", "Venice Blvd", "Crenshaw Blvd"],
+            "roads": ["Wilshire Blvd", "Santa Monica Blvd", "I-405 Southbound", "US-101 Freeway", "Sunset Blvd", "La Brea Ave", "Venice Blvd", "Crenshaw Blvd"],
             "incidents": ["Accident", "Roadworks", "Debris", "Heavy Congestion", "Power Line Down", "Sinkhole"],
         },
         "Downtown": {
@@ -51,30 +51,30 @@ async def mcp_query(location: str):
             "incidents": ["Accident", "Roadworks", "Flooding", "Subway Disruption", "Heavy Congestion", "Water Main Break"],
         },
         "North Ridge": {
-            "roads": ["Reseda Blvd", "Tampa Ave", "Nordhoff St", "Roscoe Blvd", "CA-118 Freeway", "Devonshire St", "Balboa Blvd", "White Oak Ave"],
+            "roads": ["Reseda Blvd", "Tampa Ave", "Nordhoff St", "Roscoe Blvd", "CA-118 Ronald Reagan Fwy", "Devonshire St", "Balboa Blvd", "White Oak Ave"],
             "incidents": ["Accident", "Debris", "Gas Leak", "Structural Collapse", "Heavy Congestion", "Roadworks"],
         },
         # ── Zimbabwe ──
         "Harare": {
-            "roads": ["Samora Machel Ave", "Robert Mugabe Rd", "Julius Nyerere Way", "Simon Mazorodze Rd", "Chiremba Rd", "Seke Rd", "Borrowdale Rd", "Enterprise Rd"],
-            "incidents": ["Flooding", "Pothole Collapse", "Roadworks", "Accident", "Fallen Tree", "Power Line Down"],
+            "roads": ["Samora Machel Ave", "Julius Nyerere Way", "Rekayi Tangwena Ave", "Kwame Nkrumah Ave", "Simon Mazorodze Rd", "Borrowdale Rd", "Lomagundi Rd", "Enterprise Rd"],
+            "incidents": ["Flooding", "Pothole Collapse", "Roadworks", "Kombi Accident", "Fallen Tree", "Power Line Down"],
         },
         "Bulawayo": {
-            "roads": ["Joshua Nkomo St", "Leopold Takawira Ave", "Robert Mugabe Way", "Lobengula St", "12th Ave", "Fort St", "Plumtree Rd", "Old Falls Rd"],
-            "incidents": ["Accident", "Roadworks", "Water Pipe Burst", "Debris", "Heavy Congestion", "Fallen Tree"],
+            "roads": ["Joshua Mqabuko Nkomo St", "Fife St", "George Silundika St", "Josiah Tongogara St", "8th Ave", "Old Esigodini Rd", "Khami Rd", "Samuel Parirenyatwa St"],
+            "incidents": ["Accident", "Water Pipe Burst", "Debris", "Heavy Congestion", "Fallen Tree", "Sewer Collapse"],
         },
         "Chimanimani": {
-            "roads": ["Chimanimani Rd", "Mutare-Chimanimani Highway", "Tilbury Rd", "Ngangu Rd", "Charleswood Rd", "Skyline Rd"],
-            "incidents": ["Landslide", "Bridge Washout", "Flooding", "Mudslide", "Debris", "Road Collapse"],
+            "roads": ["Chimanimani-Mutare Rd", "Ngangu Access Rd", "Charleswood Rd", "Outward Bound Rd", "Tilbury Estate Rd", "Cashel Valley Rd"],
+            "incidents": ["Landslide", "Bridge Washout", "Flooding", "Mudslide", "Road Collapse", "Boulder Fall"],
         },
         "Mutare": {
-            "roads": ["Herbert Chitepo St", "Main St", "Christmas Pass Rd", "Aerodrome Rd", "Circular Dr", "Vumba Rd", "Chimoio Rd", "4th St"],
-            "incidents": ["Flooding", "Accident", "Roadworks", "Fallen Tree", "Debris", "Heavy Congestion"],
+            "roads": ["Herbert Chitepo St", "Victory Ave", "Christmas Pass Rd", "Aerodrome Rd", "Forbes Rd", "Vumba Rd", "Hobhouse Ave", "D Avenue"],
+            "incidents": ["Flooding", "Accident", "Rockfall", "Fallen Tree", "Pothole Collapse", "Heavy Congestion"],
         },
         # ── Mozambique ──
         "Beira": {
-            "roads": ["EN1 Highway", "Avenida Samora Machel", "Rua Major Serpa Pinto", "EN6 (Beira Corridor)", "Rua do Porto", "Avenida Eduardo Mondlane", "Rua Correia de Brito", "Praça do Município"],
-            "incidents": ["Flooding", "Bridge Washout", "Storm Surge Debris", "Road Collapse", "Fallen Power Lines", "Mudslide"],
+            "roads": ["EN1 Nacional", "EN6 Beira Corridor", "Avenida do Poder Popular", "Rua Costa Serrão", "Rua Major Serpa Pinto", "Avenida Eduardo Mondlane", "Rua Correia de Brito", "Rua do Armazém"],
+            "incidents": ["Flooding", "Bridge Washout", "Storm Surge Debris", "Road Collapse", "Fallen Power Lines", "Tidal Inundation"],
         },
     }
 
