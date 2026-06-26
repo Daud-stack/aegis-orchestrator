@@ -317,6 +317,8 @@ button {
 .modal {
   width: 100%;
   max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
   padding: 2rem;
   animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
