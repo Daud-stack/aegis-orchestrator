@@ -44,7 +44,7 @@ By hardcoding real census data, generating strict resource manifests per disaste
 ## 4. Links & Assets
 
 **Video Demo [Required]**
-`[PLACEHOLDER: Insert YouTube Link Here - Reminder: Max 5 minutes]`
+`https://youtu.be/Ug4IGr5xeUQ?si=aUjL1atfKVGQtZd8`
 
 **Public Code Repository [Required]**
 https://github.com/Daud-stack/aegis-orchestrator
