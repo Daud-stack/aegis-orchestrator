@@ -360,6 +360,25 @@ button {
   gap: 0.5rem;
 }
 
+.resource-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.resource-col ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.resource-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
+}
+
 .modal-actions {
   display: flex;
   gap: 1rem;

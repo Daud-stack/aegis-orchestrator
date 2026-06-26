@@ -278,6 +278,32 @@ function App() {
                <p><strong>Traffic:</strong> {vibeDiff.context.traffic}</p>
             </div>
 
+            {vibeDiff.resource_manifest && (
+              <div className="diff-card">
+                <h3>Resource Manifest — {vibeDiff.resource_manifest.disaster_type}</h3>
+                <div className="resource-grid">
+                  <div className="resource-col">
+                    <p className="resource-label">Medical Supplies</p>
+                    <ul>
+                      {vibeDiff.resource_manifest.medical_supplies.map((s, i) => (
+                        <li key={i}><ArrowRight className="inline-icon small"/> {s}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="resource-col">
+                    <p className="resource-label">Heavy Equipment</p>
+                    <ul>
+                      {vibeDiff.resource_manifest.heavy_equipment.map((e, i) => (
+                        <li key={i}><ArrowRight className="inline-icon small"/> {e}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                <p className="resource-label" style={{marginTop: '0.75rem'}}>Personnel Required</p>
+                <p style={{fontSize: '0.85rem'}}>{vibeDiff.resource_manifest.personnel_types.join(' • ')}</p>
+              </div>
+            )}
+
             <div className="diff-card">
                <h3>Proposed Actions</h3>
                <ul>
