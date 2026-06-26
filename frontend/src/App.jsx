@@ -1,6 +1,49 @@
 import { useState, useEffect, useRef } from 'react';
 import { ShieldAlert, Activity, MapPin, CheckCircle, XCircle, Loader2, ArrowRight } from 'lucide-react';
+import { MapContainer, TileLayer, Marker, Circle, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import './App.css';
+
+// Fix Leaflet's default marker icon path issue with bundlers
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
+
+// Custom red incident marker icon
+const incidentIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
+
+// Coordinate lookup for preset locations
+const LOCATION_COORDS = {
+  'Sector 4':    { lat: 34.0522, lng: -118.2437, label: 'Los Angeles, CA' },
+  'Downtown':    { lat: 40.7128, lng: -74.0060,  label: 'New York City, NY' },
+  'North Ridge': { lat: 34.2364, lng: -118.5317, label: 'Northridge, CA' },
+};
+
+const DEFAULT_CENTER = [39.8283, -98.5795]; // Center of US
+const DEFAULT_ZOOM = 4;
+const INCIDENT_ZOOM = 12;
+
+// Inner component that controls map fly-to behavior
+function MapController({ center, zoom }) {
+  const map = useMap();
+  useEffect(() => {
+    if (center) {
+      map.flyTo(center, zoom, { duration: 2 });
+    }
+  }, [center, zoom, map]);
+  return null;
+}
 
 function App() {
   const [eventLocation, setEventLocation] = useState('Sector 4');
@@ -8,7 +51,10 @@ function App() {
   const [isRunning, setIsRunning] = useState(false);
   const [logs, setLogs] = useState([]);
   const [vibeDiff, setVibeDiff] = useState(null);
-  const [status, setStatus] = useState('idle'); // idle, running, approval_needed, approved, rejected
+  const [status, setStatus] = useState('idle');
+  const [mapCenter, setMapCenter] = useState(DEFAULT_CENTER);
+  const [mapZoom, setMapZoom] = useState(DEFAULT_ZOOM);
+  const [incidentCoords, setIncidentCoords] = useState(null);
   const logsEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -23,7 +69,15 @@ function App() {
     setIsRunning(true);
     setLogs([]);
     setVibeDiff(null);
+    setIncidentCoords(null);
     setStatus('running');
+
+    // Immediately fly to the approximate location from our lookup
+    const presetCoords = LOCATION_COORDS[eventLocation];
+    if (presetCoords) {
+      setMapCenter([presetCoords.lat, presetCoords.lng]);
+      setMapZoom(INCIDENT_ZOOM);
+    }
 
     try {
       const response = await fetch('http://localhost:8000/api/report-disaster', {
@@ -33,9 +87,18 @@ function App() {
       });
       const data = await response.json();
       
-      // Simulate real-time logs streaming
+      // Use backend-geocoded coordinates if available, otherwise use preset
+      const coords = data.plan.vibe_diff?.coordinates;
+      if (coords && coords.lat !== 0 && coords.lng !== 0) {
+        setMapCenter([coords.lat, coords.lng]);
+        setIncidentCoords([coords.lat, coords.lng]);
+      } else if (presetCoords) {
+        setIncidentCoords([presetCoords.lat, presetCoords.lng]);
+      }
+
+      // Simulate real-time log streaming
       for (let log of data.plan.logs) {
-        await new Promise(r => setTimeout(r, 600)); // Delay for visual effect
+        await new Promise(r => setTimeout(r, 600));
         setLogs(prev => [...prev, log]);
       }
       
@@ -58,6 +121,18 @@ function App() {
     setLogs(prev => [...prev, { source: "System", message: "Vibe Diff Rejected. Aborting dispatch." }]);
   };
 
+  const handleReset = () => {
+    setIsRunning(false);
+    setStatus('idle');
+    setLogs([]);
+    setVibeDiff(null);
+    setIncidentCoords(null);
+    setMapCenter(DEFAULT_CENTER);
+    setMapZoom(DEFAULT_ZOOM);
+  };
+
+  const isLocked = isRunning && status !== 'approved' && status !== 'rejected';
+
   return (
     <div className="app-container">
       <header className="header">
@@ -76,7 +151,7 @@ function App() {
           <h2><MapPin className="inline-icon"/> Disaster Input</h2>
           <div className="input-group">
             <label>Event Type</label>
-            <select value={eventType} onChange={e => setEventType(e.target.value)} disabled={isRunning && status !== 'approved' && status !== 'rejected'}>
+            <select value={eventType} onChange={e => setEventType(e.target.value)} disabled={isLocked}>
               <option>Flood</option>
               <option>Earthquake</option>
               <option>Wildfire</option>
@@ -84,29 +159,74 @@ function App() {
           </div>
           <div className="input-group">
             <label>Location</label>
-            <select value={eventLocation} onChange={e => setEventLocation(e.target.value)} disabled={isRunning && status !== 'approved' && status !== 'rejected'}>
+            <select value={eventLocation} onChange={e => setEventLocation(e.target.value)} disabled={isLocked}>
               <option>Sector 4</option>
               <option>Downtown</option>
               <option>North Ridge</option>
             </select>
           </div>
           <button 
-            className={`btn-primary ${isRunning && status !== 'approved' && status !== 'rejected' ? 'disabled' : ''}`}
-            onClick={handleStart}
-            disabled={isRunning && status !== 'approved' && status !== 'rejected'}
+            className={`btn-primary ${isLocked ? 'disabled' : ''}`}
+            onClick={status === 'approved' || status === 'rejected' ? handleReset : handleStart}
+            disabled={isLocked}
           >
-            {status === 'running' ? <><Loader2 className="spin inline-icon" /> Processing...</> : 'Trigger Response Orchestrator'}
+            {status === 'running' ? <><Loader2 className="spin inline-icon" /> Processing...</> 
+              : status === 'approved' || status === 'rejected' ? 'Reset & Run Again'
+              : 'Trigger Response Orchestrator'}
           </button>
         </div>
 
         <div className="panel map-panel glass">
-           <h2>Live Radar</h2>
-           <div className="map-placeholder">
-              <div className="radar-sweep"></div>
-              {status !== 'idle' && <div className="ping" style={{top: '40%', left: '50%'}}></div>}
-              <div className="map-overlay">
-                 {status === 'idle' ? 'Awaiting Input...' : `Monitoring ${eventLocation}`}
-              </div>
+           <h2><MapPin className="inline-icon" /> Live Incident Map</h2>
+           <div className="map-wrapper">
+             <MapContainer
+               center={DEFAULT_CENTER}
+               zoom={DEFAULT_ZOOM}
+               scrollWheelZoom={true}
+               style={{ height: '100%', width: '100%' }}
+             >
+               <TileLayer
+                 attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+                 url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+               />
+               <MapController center={mapCenter} zoom={mapZoom} />
+               
+               {incidentCoords && (
+                 <>
+                   <Marker position={incidentCoords} icon={incidentIcon} />
+                   <Circle
+                     center={incidentCoords}
+                     radius={1500}
+                     pathOptions={{
+                       color: '#ef4444',
+                       fillColor: '#ef4444',
+                       fillOpacity: 0.15,
+                       weight: 2,
+                       dashArray: '8 4',
+                     }}
+                   />
+                   <Circle
+                     center={incidentCoords}
+                     radius={500}
+                     pathOptions={{
+                       color: '#ef4444',
+                       fillColor: '#ef4444',
+                       fillOpacity: 0.3,
+                       weight: 1,
+                     }}
+                   />
+                 </>
+               )}
+             </MapContainer>
+
+             <div className={`map-status-overlay ${incidentCoords ? 'alert' : ''}`}>
+               <div className="status-indicator"></div>
+               {status === 'idle'
+                 ? 'STANDBY — Awaiting Input'
+                 : status === 'running'
+                 ? `TRACKING — ${eventLocation}`
+                 : `INCIDENT — ${eventType} @ ${eventLocation}`}
+             </div>
            </div>
         </div>
 

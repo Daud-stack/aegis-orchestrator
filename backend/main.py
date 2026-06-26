@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from typing import Optional
 from pydantic import BaseModel
 from agent_core import orchestrate_disaster_response
 
@@ -16,10 +17,11 @@ app.add_middleware(
 class DisasterRequest(BaseModel):
     event_type: str
     location: str
+    image_base64: Optional[str] = None
 
 @app.post("/api/report-disaster")
 async def report_disaster(request: DisasterRequest):
-    plan = await orchestrate_disaster_response(request.event_type, request.location)
+    plan = await orchestrate_disaster_response(request.event_type, request.location, request.image_base64)
     return {"status": "success", "plan": plan}
 
 @app.get("/api/health")

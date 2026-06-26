@@ -1,12 +1,17 @@
 import asyncio
 import requests
+import random
 
 async def mcp_query(location: str):
     """
     Real MCP Server simulating context retrieval.
     Fetches real weather using Open-Meteo API.
-    Simulates traffic deterministically based on location name length.
+    Simulates traffic realistically and deterministically.
     """
+    weather_str = "Clear (Location not found)"
+    lat = 0.0
+    lon = 0.0
+    
     # 1. Geocoding (get lat/long for location)
     try:
         geocode_url = f"https://geocoding-api.open-meteo.com/v1/search?name={location}&count=1&language=en&format=json"
@@ -28,17 +33,28 @@ async def mcp_query(location: str):
             precip = current.get("precipitation", 0)
             
             weather_str = f"Temp: {temp}°F, Wind: {wind} mph, Precip: {precip} mm"
-        else:
-            weather_str = "Clear (Location not found)"
             
     except Exception as e:
         weather_str = f"Error fetching weather: {str(e)}"
         
-    # Simulate traffic based on location name length to have some determinism
-    traffic_str = "Route 4 Blocked, Highway 9 Clear" if len(location) % 2 == 0 else "Normal Traffic"
+    # 3. Simulate Realistic Traffic
+    random.seed(location)
+    incident_types = ["Accident", "Roadworks", "Flooding", "Debris", "Heavy Congestion"]
+    road_names = ["Main St", "Highway 9", "Route 4", "I-95", "Broad St", "Oak Ave"]
+    
+    num_incidents = random.randint(0, 2)
+    if num_incidents == 0:
+        traffic_str = "Normal Traffic in the area."
+    else:
+        incidents = []
+        for _ in range(num_incidents):
+            inc = random.choice(incident_types)
+            road = random.choice(road_names)
+            incidents.append(f"{road} Blocked due to {inc}")
+        traffic_str = ", ".join(incidents)
 
     return {
         "weather": weather_str,
-        "traffic": traffic_str
+        "traffic": traffic_str,
+        "coordinates": {"lat": lat, "lng": lon}
     }
-
