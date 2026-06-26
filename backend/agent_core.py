@@ -27,14 +27,11 @@ def sanitize_context(text: str) -> str:
     text = re.sub(r'\b[A-Z][a-z]+ [A-Z][a-z]+\b', '[REDACTED_NAME]', text)
     return text
 
-class VulnerableGroups(BaseModel):
+class PopulationDemographics(BaseModel):
+    total_population: int
     elderly: int = Field(default=0, description="Estimated number of elderly individuals")
     pediatric: int = Field(default=0, description="Estimated number of pediatric individuals")
     disabled: int = Field(default=0, description="Estimated number of disabled individuals")
-
-class PopulationDemographics(BaseModel):
-    total_population: int
-    vulnerable_groups: VulnerableGroups = Field(description="Breakdown of vulnerable demographics")
 
 class MedicalOutput(BaseModel):
     kits_required: int
@@ -107,9 +104,10 @@ async def orchestrate_disaster_response(event_type: str, location: str, image_ba
     except Exception as e:
         log(f"Error estimating population: {e}", "Orchestrator Error")
         affected_population = 1000
-        demographics = {"total_population": 1000, "vulnerable_groups": {"elderly": 150, "pediatric": 200}}
-        
-    log(f"Estimated population: {affected_population}. Vulnerable groups: {demographics['vulnerable_groups']}", "Orchestrator")
+        demographics = {"total_population": 1000, "elderly": 150, "pediatric": 200, "disabled": 50}
+
+    vulnerable_groups = {k: demographics.get(k, 0) for k in ['elderly', 'pediatric', 'disabled']}
+    log(f"Estimated population: {affected_population}. Vulnerable groups: {vulnerable_groups}", "Orchestrator")
     
     # 2. A2A Protocol: Delegate to Medical Agent
     log("Dynamically loading skill: 'medical-assessment-calculator'...", "Orchestrator")
@@ -120,7 +118,7 @@ async def orchestrate_disaster_response(event_type: str, location: str, image_ba
     Event: {event_type}
     Location: {sanitized_location}
     Total Population: {affected_population}
-    Demographics: {json.dumps(demographics['vulnerable_groups'])}
+    Demographics: {json.dumps(vulnerable_groups)}
     Vision Insights (if any): {vision_insights or 'None'}
     
     Procedural Rules:
