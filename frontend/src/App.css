@@ -152,6 +152,18 @@ select {
 select:focus {
   border-color: var(--accent);
 }
+optgroup {
+  background: #1e293b;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+option {
+  background: #0f172a;
+  color: white;
+  font-weight: 400;
+  font-size: 0.9rem;
+}
 
 button {
   width: 100%;

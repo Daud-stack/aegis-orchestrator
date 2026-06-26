@@ -25,9 +25,17 @@ const incidentIcon = new L.Icon({
 
 // Coordinate lookup for preset locations
 const LOCATION_COORDS = {
+  // US Locations
   'Sector 4':    { lat: 34.0522, lng: -118.2437, label: 'Los Angeles, CA' },
   'Downtown':    { lat: 40.7128, lng: -74.0060,  label: 'New York City, NY' },
   'North Ridge': { lat: 34.2364, lng: -118.5317, label: 'Northridge, CA' },
+  // Zimbabwe
+  'Harare':      { lat: -17.8292, lng: 31.0522,  label: 'Harare, Zimbabwe' },
+  'Bulawayo':    { lat: -20.1325, lng: 28.6266,  label: 'Bulawayo, Zimbabwe' },
+  'Chimanimani': { lat: -19.7994, lng: 32.8697,  label: 'Chimanimani, Zimbabwe' },
+  'Mutare':      { lat: -18.9707, lng: 32.6709,  label: 'Mutare, Zimbabwe' },
+  // Mozambique
+  'Beira':       { lat: -19.8436, lng: 34.8389,  label: 'Beira, Mozambique' },
 };
 
 const DEFAULT_CENTER = [39.8283, -98.5795]; // Center of US
@@ -155,14 +163,27 @@ function App() {
               <option>Flood</option>
               <option>Earthquake</option>
               <option>Wildfire</option>
+              <option>Cyclone</option>
+              <option>Tropical Storm</option>
             </select>
           </div>
           <div className="input-group">
             <label>Location</label>
             <select value={eventLocation} onChange={e => setEventLocation(e.target.value)} disabled={isLocked}>
-              <option>Sector 4</option>
-              <option>Downtown</option>
-              <option>North Ridge</option>
+              <optgroup label="United States">
+                <option>Sector 4</option>
+                <option>Downtown</option>
+                <option>North Ridge</option>
+              </optgroup>
+              <optgroup label="Zimbabwe">
+                <option>Harare</option>
+                <option>Bulawayo</option>
+                <option>Chimanimani</option>
+                <option>Mutare</option>
+              </optgroup>
+              <optgroup label="Mozambique">
+                <option>Beira</option>
+              </optgroup>
             </select>
           </div>
           <button 

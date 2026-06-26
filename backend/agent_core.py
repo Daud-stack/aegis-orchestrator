@@ -126,7 +126,7 @@ async def orchestrate_disaster_response(event_type: str, location: str, image_ba
     2. Personnel Calculation: Require 1 paramedic for every 50 estimated affected individuals.
     3. Specialized Equipment: If there are vulnerable groups (e.g. elderly -> oxygen, pediatric -> pediatric kits) or specific hazards from Vision Insights, list the required specialized equipment.
     4. Priority Triage:
-       - Flood/Wildfire: "High" priority.
+       - Flood/Wildfire/Cyclone/Tropical Storm: "High" priority.
        - Earthquake: "Critical" priority.
        - Minor structural damage: "Medium" priority.
        - Otherwise: "Low" or "Medium".
