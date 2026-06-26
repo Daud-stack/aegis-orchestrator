@@ -37,21 +37,64 @@ async def mcp_query(location: str):
     except Exception as e:
         weather_str = f"Error fetching weather: {str(e)}"
         
-    # 3. Simulate Realistic Traffic
+    # 3. Location-specific road data and realistic traffic simulation
     random.seed(location)
-    incident_types = ["Accident", "Roadworks", "Flooding", "Debris", "Heavy Congestion"]
-    road_names = ["Main St", "Highway 9", "Route 4", "I-95", "Broad St", "Oak Ave"]
-    
-    num_incidents = random.randint(0, 2)
-    if num_incidents == 0:
-        traffic_str = "Normal Traffic in the area."
-    else:
-        incidents = []
-        for _ in range(num_incidents):
-            inc = random.choice(incident_types)
-            road = random.choice(road_names)
-            incidents.append(f"{road} Blocked due to {inc}")
-        traffic_str = ", ".join(incidents)
+
+    LOCATION_ROADS = {
+        # ── United States ──
+        "Sector 4": {
+            "roads": ["Wilshire Blvd", "Santa Monica Blvd", "I-405", "US-101 Freeway", "Sunset Blvd", "La Brea Ave", "Venice Blvd", "Crenshaw Blvd"],
+            "incidents": ["Accident", "Roadworks", "Debris", "Heavy Congestion", "Power Line Down", "Sinkhole"],
+        },
+        "Downtown": {
+            "roads": ["Broadway", "5th Ave", "FDR Drive", "I-278 (BQE)", "Canal St", "Houston St", "West Side Highway", "Park Ave"],
+            "incidents": ["Accident", "Roadworks", "Flooding", "Subway Disruption", "Heavy Congestion", "Water Main Break"],
+        },
+        "North Ridge": {
+            "roads": ["Reseda Blvd", "Tampa Ave", "Nordhoff St", "Roscoe Blvd", "CA-118 Freeway", "Devonshire St", "Balboa Blvd", "White Oak Ave"],
+            "incidents": ["Accident", "Debris", "Gas Leak", "Structural Collapse", "Heavy Congestion", "Roadworks"],
+        },
+        # ── Zimbabwe ──
+        "Harare": {
+            "roads": ["Samora Machel Ave", "Robert Mugabe Rd", "Julius Nyerere Way", "Simon Mazorodze Rd", "Chiremba Rd", "Seke Rd", "Borrowdale Rd", "Enterprise Rd"],
+            "incidents": ["Flooding", "Pothole Collapse", "Roadworks", "Accident", "Fallen Tree", "Power Line Down"],
+        },
+        "Bulawayo": {
+            "roads": ["Joshua Nkomo St", "Leopold Takawira Ave", "Robert Mugabe Way", "Lobengula St", "12th Ave", "Fort St", "Plumtree Rd", "Old Falls Rd"],
+            "incidents": ["Accident", "Roadworks", "Water Pipe Burst", "Debris", "Heavy Congestion", "Fallen Tree"],
+        },
+        "Chimanimani": {
+            "roads": ["Chimanimani Rd", "Mutare-Chimanimani Highway", "Tilbury Rd", "Ngangu Rd", "Charleswood Rd", "Skyline Rd"],
+            "incidents": ["Landslide", "Bridge Washout", "Flooding", "Mudslide", "Debris", "Road Collapse"],
+        },
+        "Mutare": {
+            "roads": ["Herbert Chitepo St", "Main St", "Christmas Pass Rd", "Aerodrome Rd", "Circular Dr", "Vumba Rd", "Chimoio Rd", "4th St"],
+            "incidents": ["Flooding", "Accident", "Roadworks", "Fallen Tree", "Debris", "Heavy Congestion"],
+        },
+        # ── Mozambique ──
+        "Beira": {
+            "roads": ["EN1 Highway", "Avenida Samora Machel", "Rua Major Serpa Pinto", "EN6 (Beira Corridor)", "Rua do Porto", "Avenida Eduardo Mondlane", "Rua Correia de Brito", "Praça do Município"],
+            "incidents": ["Flooding", "Bridge Washout", "Storm Surge Debris", "Road Collapse", "Fallen Power Lines", "Mudslide"],
+        },
+    }
+
+    # Fallback for unknown locations
+    default_data = {
+        "roads": ["Main Rd", "Highway 1", "Central Ave", "River Rd", "Bridge St", "Market Rd"],
+        "incidents": ["Accident", "Flooding", "Roadworks", "Debris", "Heavy Congestion"],
+    }
+
+    loc_data = LOCATION_ROADS.get(location, default_data)
+    roads = loc_data["roads"]
+    incidents_pool = loc_data["incidents"]
+
+    num_incidents = random.randint(1, 3)
+    used_roads = random.sample(roads, min(num_incidents, len(roads)))
+    incidents = []
+    for road in used_roads:
+        inc = random.choice(incidents_pool)
+        incidents.append(f"{road} Blocked due to {inc}")
+    traffic_str = ", ".join(incidents)
 
     return {
         "weather": weather_str,
